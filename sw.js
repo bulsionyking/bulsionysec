@@ -8,32 +8,131 @@ const PRECACHE_ASSETS = [
   './icon-192x192.png'
 ];
 
-// Install: pre-cache core resources
+// ---------- IndexedDB QUEUE ----------
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('bulsionysec-sync-db', 1);
+    request.onupgradeneeded = e => {
+      e.target.result.createObjectStore('syncQueue', { autoIncrement: true });
+    };
+    request.onsuccess = e => resolve(e.target.result);
+    request.onerror = reject;
+  });
+}
+
+async function pushToQueue(payload) {
+  const db = await openDB();
+  const tx = db.transaction('syncQueue', 'readwrite');
+  tx.objectStore('syncQueue').add(payload);
+  return tx.complete;
+}
+
+async function popAllFromQueue() {
+  const db = await openDB();
+  const tx = db.transaction('syncQueue', 'readwrite');
+  const store = tx.objectStore('syncQueue');
+
+  let items = [];
+  return new Promise(resolve => {
+    const req = store.openCursor();
+    req.onsuccess = e => {
+      const cursor = e.target.result;
+      if (cursor) {
+        items.push(cursor.value);
+        cursor.delete(); // remove after reading
+        cursor.continue();
+      } else {
+        resolve(items);
+      }
+    };
+  });
+}
+
+// ---------- INSTALL ----------
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(PRECACHE_ASSETS))
-      .catch(err => console.error('Precache failed:', err))
   );
 });
 
-// Activate: clean up old caches
+// ---------- ACTIVATE ----------
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      })
-    ))
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => key !== CACHE_NAME && caches.delete(key)))
+    )
   );
   self.clients.claim();
 });
 
-// Fetch: network-first for API/XHR, cache-first for static assets
+// ---------- FETCH WITH BACKGROUND SYNC ----------
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const req = event.request;
 
+  // Only sync POST requests to your API endpoint
+  if (req.method === 'POST' && req.url.includes('/api/bulsionysec')) {
+    event.respondWith(
+      fetch(req.clone()).catch(async () => {
+        // Save failed request to queue
+        const body = await req.clone().text();
+        await pushToQueue({
+          url: req.url,
+          body,
+          headers: [...req.headers],
+          method: req.method
+        });
+        
+        // Register Background Sync
+        const reg = await self.registration.sync.register('sync-bulsionysec');
+
+        return new Response(
+          JSON.stringify({ queued: true, offline: true }),
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+      })
+    );
+    return;
+  }
+
+  // Default: your network/cache logic for GETs
+  if (req.method === 'GET') {
+    event.respondWith(
+      caches.match(req).then(cached => {
+        if (cached) return cached;
+        return fetch(req).then(res => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
+          return res;
+        });
+      })
+    );
+  }
+});
+
+// ---------- BACKGROUND SYNC EVENT ----------
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-bulsionysec') {
+    event.waitUntil(flushQueue());
+  }
+});
+
+async function flushQueue() {
+  const items = await popAllFromQueue();
+  for (let item of items) {
+    try {
+      await fetch(item.url, {
+        method: item.method,
+        headers: item.headers,
+        body: item.body
+      });
+    } catch (err) {
+      // Put back if still failing
+      await pushToQueue(item);
+    }
+  }
+}
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
