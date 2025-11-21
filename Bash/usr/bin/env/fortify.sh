@@ -42,36 +42,36 @@ cat <<EOF
 {
     "device": {
         "macAddress": "$macAddress",
-        "btAddress": "$btAddress"
+        "btAddress": "$btAddress",
     },
     "ipAddress": {
         "ip4": "$ip4",
         "ip6": "$ip6"
     },
     "firewallRule": {
-        "deny": $firewall_deny,
-        "port": $firewall_port,
-        "protocol": "$firewall_protocol"
+        "deny": "$firewall_deny",
+        "port": "$firewall_port",
+        "protocol": "$firewall_protocol",
     },
     "telemetry": {
-        "enabled": $telemetry_enabled
+        "enabled": "$telemetry_enabled",
     },
     "hostname": "$hostname",
     "dns": {
         "primary": "$dns_primary",
-        "secondary": "$dns_secondary"
+        "secondary": "$dns_secondary",
     },
     "encryption": {
         "method": "$encryption_method",
-        "enable": $encryption_enable,
-        "encryption_key": "$encryption_key"
+        "enable": "$encryption_enable",
+        "encryption_key": "$encryption_key",
     },
     "traceroute": {
-        "block": $traceroute_block
+        "block": "$traceroute_block,"
     },
     "fingerprinting": {
-        "obfuscate": $fingerprinting_obfuscate
-n    }
+        "obfuscate": "$fingerprinting_obfuscate",
+    }
 }
 EOF
 
