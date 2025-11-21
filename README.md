@@ -4,7 +4,7 @@
 
 **Author:** [bulsionyking](https://github.com/bulsionyking)  
 **Version:** 1.0.0  
-**License:** Proprietary (All Rights Reserved)  
+**License:** MIT LICENSE (Some Rights Reserved)  
 **Copyright:** © BulsionySec™ SP
 
 ---
