@@ -1,7 +1,7 @@
 {
   "seoConfiguration": {
-    "protocol": "JSON-LD",
-    "protocolPath": "/mcl/dir/robots ROBOTS",
+    "protocol": "JSON",
+    "protocolPath": "/json/dir/robots ROBOTS",
     "metadataStandard": "MetaRank™ SEO Configuration Language v1.0",
     "site": {
       "name": "BulsionySec™ Fortify Viewer",
