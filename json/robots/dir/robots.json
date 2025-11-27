@@ -7,7 +7,7 @@
     "metadataStandard": "MetaRank™ SEO Configuration Language v1.0",
     "site": {
       "name": "BulsionySec™ Fortify Viewer",
-      "domain": "https://bulsionyking.github.io/bulsionysec/",
+      "domain": "https://bulsioning.github.io/bulsionysec/",
       "author": "bulsionyking",
       "organization": "BulsionySec™ SP",
       "language": "en-US",
@@ -18,7 +18,7 @@
       "description": "BulsionySec™ Fortify provides next-level system security, encryption, and telemetry for Bash-based infrastructures. Fortify your data — amplify your defense.",
       "slug": "/index.html",
       "type": "product-landing",
-      "canonical": "https://bulsionyking.github.io/bulsionysec/"
+      "canonical": "https://bulsionking.github.io/bulsionysec/"
     },
     "keywords": {
       "primary": [
