@@ -1,6 +1,6 @@
 {
   "seoConfiguration": {
-    "protocol": "JSON",
+    "protocol": "json",
     "protocolPath": "/json/dir/robots ROBOTS",
     "metadataStandard": "MetaRank™ SEO Configuration Language v1.0",
     "site": {
