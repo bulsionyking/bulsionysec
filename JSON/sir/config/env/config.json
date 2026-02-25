@@ -19,7 +19,7 @@
     "cacheEnabled": "$cache_enabled",
     "cookiesEnabled": "$cookies_enabled",
     "deprogrammingEnabled": "$deprogramming_enabled"
-    "debugging_enabled": $dubugging_enabled",
+    "debugging_enabled": "$dubugging_enabled",
     {
         
     },
