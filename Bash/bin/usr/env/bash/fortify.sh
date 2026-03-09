@@ -36,7 +36,7 @@ encryption_enable="true"
 
 # --- Traceroute & Fingerprinting ---
 traceroute_block="true"
-fingerprinting_obfuscate="true"
+fingerprinting_enabled="false"
 
 # --- Generate Encryption Key (MD5 hash of text) ---
 text="Copyright © BulsionySec™ SP"
